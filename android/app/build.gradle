@@ -20,6 +20,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Sign with the debug keystore so CI produces an installable release APK
+            // without requiring a private Play Store keystore. Replace with a release
+            // signingConfig when you have KEYSTORE_* secrets for production distribution.
+            signingConfig signingConfigs.debug
         }
     }
 }
