@@ -1,0 +1,26 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+
+# Android build artifacts (keep the platform project)
+android/app/build/
+android/app/release/
+android/.gradle/
+android/local.properties
+android/captures/
+android/.idea/
+android/*.iml
+android/keystore.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+
+.idea/
+*.iml
+.vscode/
