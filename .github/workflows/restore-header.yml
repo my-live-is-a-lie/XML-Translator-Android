@@ -1,0 +1,45 @@
+name: Restore Header.tsx with safe-area fix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore Header from good commit and apply safe-area fix
+        run: |
+          git checkout 8737607d71cf8a352d0761a75a13c5f8dff32840 -- src/components/Header.tsx
+          python3 << 'PY'
+          from pathlib import Path
+          path = Path("src/components/Header.tsx")
+          text = path.read_text()
+          old = 'className="relative flex items-center justify-between gap-2 px-4 py-3.5 border-b border-slate-200/80 dark:border-[#252C3A]"'
+          new = 'className="relative flex items-center justify-between gap-2 px-4 pb-3.5 pt-[max(0.875rem,env(safe-area-inset-top))] border-b border-slate-200/80 dark:border-[#252C3A]"'
+          if "safe-area-inset-top" in text:
+              print("Already fixed")
+          elif old not in text:
+              raise SystemExit("Pattern not found in Header.tsx")
+          else:
+              path.write_text(text.replace(old, new, 1))
+              print("Applied safe-area fix")
+          PY
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/components/Header.tsx
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix(ui): restore Header.tsx and offset drawer controls below status bar"
+            git push origin HEAD:main
+          fi
